@@ -40,7 +40,7 @@ func checkPing(ip, port string) PingResponse {
 		return PingResponse{}
 	}
 
-	dial.Close()
+	defer dial.Close()
 
 	return PingResponse{
 		Reachable: true,
