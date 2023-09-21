@@ -10,6 +10,7 @@ import (
 )
 
 var authToken = os.Getenv("AUTH_TOKEN")
+var egressAddr = &net.TCPAddr{IP: net.ParseIP(os.Getenv("EGRESS_ADDRESS"))}
 
 type PingResponse struct {
 	Reachable bool  `json:"reachable"`
@@ -32,7 +33,10 @@ func isAuthorized(req *http.Request) bool {
 }
 
 func checkPing(ip, port string) PingResponse {
-	dialer := net.Dialer{Timeout: time.Second * 4}
+	dialer := net.Dialer{
+		Timeout:   time.Second * 4,
+		LocalAddr: egressAddr,
+	}
 	currentTime := time.Now()
 
 	dial, err := dialer.Dial("tcp4", fmt.Sprintf("%s:%s", ip, port))
